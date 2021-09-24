@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const qs = require('querystring');
 // const formidable = require('formidable');
-// const breeds = require('../data/breeds.json');
+const breeds = require('../data/breeds.json');
 const cats = require('../data/cats.json');
 
 module.exports = (req, res) => {
@@ -16,7 +16,14 @@ module.exports = (req, res) => {
     const index = fs.createReadStream(filePath);
 
     index.on('data', (data) => {
-      res.write(data);
+      let catBreedPlaceHolder = breeds.map(
+        (breed) => `<option value="${breed}">${breed}</option>`
+      );
+
+      let modifiedData = data
+        .toString()
+        .replace('{{catBreeds}}', catBreedPlaceHolder);
+      res.write(modifiedData);
     });
 
     index.on('end', () => {
