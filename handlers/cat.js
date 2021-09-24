@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const qs = require('querystring');
 // const formidable = require('formidable');
-const breeds = require('../data/breeds.json');
+// const breeds = require('../data/breeds.json');
 const cats = require('../data/cats.json');
 
 module.exports = (req, res) => {
@@ -51,18 +51,21 @@ module.exports = (req, res) => {
     req.on('end', () => {
       let body = qs.parse(formData);
 
-      fs.readFile('../data/breeds.json', (err, data) => {
+      fs.readFile('./data/breeds.json', (err, data) => {
         if (err) {
           throw err;
         }
+        console.log('DATA:', data);
 
-        let breedsTwo = JSON.parse(data);
-        breedsTwo.push(body.breed);
-        let json = JSON.stringify(breedsTwo);
+        let breeds = JSON.parse(data);
+        console.log(breeds);
+        breeds.push(body.breed);
+        let json = JSON.stringify(breeds);
 
-        fs.writeFile('../data/breeds.json', json, 'utf-8', () =>
+        fs.writeFile('./data/breeds.json', json, 'utf-8', () =>
           console.log('The breed was uploaded successfully!')
         );
+        console.log(breeds);
       });
 
       res.writeHead(202, { location: '/' });
