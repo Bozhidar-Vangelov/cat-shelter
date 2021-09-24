@@ -55,20 +55,17 @@ module.exports = (req, res) => {
         if (err) {
           throw err;
         }
-        console.log('DATA:', data);
 
         let breeds = JSON.parse(data);
-        console.log(breeds);
         breeds.push(body.breed);
         let json = JSON.stringify(breeds);
 
         fs.writeFile('./data/breeds.json', json, 'utf-8', () =>
           console.log('The breed was uploaded successfully!')
         );
-        console.log(breeds);
       });
 
-      res.writeHead(202, { location: '/' });
+      res.writeHead(302, { location: '/' });
       res.end();
     });
   } else {
