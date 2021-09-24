@@ -23,11 +23,26 @@ module.exports = (req, res) => {
         return;
       }
 
+      let modifiedCats = cats.map(
+        (cat) => `<li>
+      <img src="${path.join('./content/images/' + cat.image)}"${cat.name}">
+      <h3>${cat.name}</h3>
+      <p><span>Breed: </span>${cat.breed}</p>
+      <p><span>Description: </span>${cat.description}</p>
+      <ul class="buttons">
+<li class="btn edit"><a href="/cats-edit/${cat.id}">Change Info</a></li>
+<li class="btn delete"><a href="/cats-find-new-home/${cat.id}">New Home</a></li>
+</ul>
+  </li>`
+      );
+
+      let modifiedData = data.toString().replace(`{{cats}}`, modifiedCats);
+
       res.writeHead(200, {
         'Content-Type': 'text/html',
       });
 
-      res.write(data);
+      res.write(modifiedData);
       res.end;
     });
   } else {

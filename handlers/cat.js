@@ -88,8 +88,6 @@ module.exports = (req, res) => {
       let newPath = path.normalize(
         path.join(globalPath, `/content/images/${files.upload.name}`)
       );
-      console.log(oldPath);
-      console.log(newPath);
 
       fs.rename(oldPath, newPath, (err) => {
         if (err) {
