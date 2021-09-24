@@ -97,32 +97,24 @@ module.exports = (req, res) => {
         }
         console.log('File was uploaded successfully');
       });
+      fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
+        if (err) {
+          throw err;
+        }
+
+        let allCats = JSON.parse(data);
+        allCats.push({
+          id: cats.length + 1,
+          ...fields,
+          image: files.upload.name,
+        });
+        let json = JSON.stringify(allCats);
+        fs.writeFile('./data/cats.json', json, () => {
+          res.writeHead(302, { location: '/' });
+          res.end();
+        });
+      });
     });
-
-    // req.on('data', (data) => {
-    //   formData += data;
-    // });
-
-    // req.on('end', () => {
-    //   let body = qs.parse(formData);
-
-    //   fs.readFile('./data/breeds.json', (err, data) => {
-    //     if (err) {
-    //       throw err;
-    //     }
-
-    //     let breeds = JSON.parse(data);
-    //     breeds.push(body.breed);
-    //     let json = JSON.stringify(breeds);
-
-    //     fs.writeFile('./data/breeds.json', json, 'utf-8', () =>
-    //       console.log('The breed was uploaded successfully!')
-    //     );
-    //   });
-
-    //   res.writeHead(302, { location: '/' });
-    //   res.end();
-    // });
   } else {
     return true;
   }
