@@ -88,6 +88,8 @@ module.exports = (req, res) => {
         throw err;
       }
 
+      console.log(files);
+
       let oldPath = files.upload.path;
       let newPath = path.normalize(
         path.join(globalPath, `/content/images/${files.upload.name}`)
@@ -207,6 +209,47 @@ module.exports = (req, res) => {
       console.log(err);
     });
   } else if (pathname.includes('/cats-edit') && req.method === 'POST') {
+    let form = new formidable.IncomingForm();
+
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        throw err;
+      }
+
+      console.log(files);
+
+      // let oldPath = files.upload.path;
+      // let newPath = path.normalize(
+      //   path.join(globalPath, `/content/images/${files.upload.name}`)
+      // );
+
+      // fs.rename(oldPath, newPath, (err) => {
+      //   if (err) {
+      //     throw err;
+      //   }
+      //   console.log('File was uploaded successfully');
+      // });
+      fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
+        if (err) {
+          throw err;
+        }
+
+        let currentCats = JSON.parse(data);
+        let catId = Number(pathname.substring(pathname.length - 1));
+
+        currentCats = currentCats.filter((cat) => cat.id !== catId);
+        currentCats.push({
+          id: catId,
+          ...fields,
+          // image: files.upload.name,
+        });
+        let json = JSON.stringify(currentCats);
+        // fs.writeFile('./data/cats.json', json, () => {
+        //   res.writeHead(302, { location: '/' });
+        //   res.end();
+        // });
+      });
+    });
   } else if (
     pathname.includes('/cats-find-new-home') &&
     req.method === 'POST'
