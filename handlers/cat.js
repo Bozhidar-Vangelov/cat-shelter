@@ -5,7 +5,7 @@ const qs = require('querystring');
 const formidable = require('formidable');
 const breeds = require('../data/breeds.json');
 const cats = require('../data/cats.json');
-const globalPath = '/home/bvangelov/projects/cat-shelter';
+const globalPath = __dirname.replace('handlers', '');
 
 module.exports = (req, res) => {
   const pathname = url.parse(req.url).pathname;
@@ -15,6 +15,9 @@ module.exports = (req, res) => {
   if (pathname === '/cats/add-cat' && req.method === 'GET') {
     filePath = path.normalize(path.join(__dirname, '../views/addCat.html'));
     const index = fs.createReadStream(filePath);
+
+    console.log(__dirname);
+    console.log(globalPath);
 
     index.on('data', (data) => {
       let catBreedPlaceHolder = breeds.map(
