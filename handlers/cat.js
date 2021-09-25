@@ -11,6 +11,7 @@ module.exports = (req, res) => {
   const pathname = url.parse(req.url).pathname;
   let filePath = undefined;
   console.log(req.method);
+  console.log(pathname);
 
   if (pathname === '/cats/add-cat' && req.method === 'GET') {
     filePath = path.normalize(path.join(__dirname, '../views/addCat.html'));
@@ -116,6 +117,55 @@ module.exports = (req, res) => {
         });
       });
     });
+  } else if (pathname.includes('/cats-edit') && req.method === 'GET') {
+    let filePath = path.normalize(
+      path.join(__dirname, '../views/editCat.html')
+    );
+
+    const index = fs.createReadStream(filePath);
+
+    index.on('data', (data) => {
+      let catId = Number(pathname.substring(pathname.length - 1));
+      let currentCat = '';
+      cats.forEach((cat) => {
+        if (cat.id === catId) {
+          currentCat = cat;
+        }
+      });
+
+      let modifiedData = data.toString().replace('{{id}}', catId);
+      modifiedData = modifiedData.replace('{{name}}', currentCat.name);
+      modifiedData = modifiedData.replace(
+        '{{description}}',
+        currentCat.description
+      );
+
+      const breedAsOptions = breeds.map(
+        (b) => `<option value="${b}">${b}</option>`
+      );
+
+      modifiedData = modifiedData.replace(
+        '{{catBreeds}}',
+        breedAsOptions.join('/')
+      );
+
+      modifiedData = modifiedData.replace('{{breed}}', currentCat.breed);
+      res.write(modifiedData);
+    });
+
+    index.on('end', () => {
+      res.end();
+    });
+
+    index.on('error', (err) => {
+      console.log(err);
+    });
+  } else if (pathname.includes('/cats-find-new-home') && req.method === 'GET') {
+  } else if (pathname.includes('/cats-edit') && req.method === 'POST') {
+  } else if (
+    pathname.includes('/cats-find-new-home') &&
+    req.method === 'POST'
+  ) {
   } else {
     return true;
   }
