@@ -161,6 +161,51 @@ module.exports = (req, res) => {
       console.log(err);
     });
   } else if (pathname.includes('/cats-find-new-home') && req.method === 'GET') {
+    let filePath = path.normalize(
+      path.join(__dirname, '../views/catShelter.html')
+    );
+
+    const index = fs.createReadStream(filePath);
+
+    index.on('data', (data) => {
+      let catId = Number(pathname.substring(pathname.length - 1));
+      let currentCat = '';
+      cats.forEach((cat) => {
+        if (cat.id === catId) {
+          currentCat = cat;
+        }
+      });
+
+      let catImg = `../content/images/${currentCat.image}`;
+
+      let modifiedData = data.toString().replace('{{id}}', catId);
+      modifiedData = modifiedData.replace('{{src}}', catImg);
+      modifiedData = modifiedData.replace('{{name}}', currentCat.name);
+      modifiedData = modifiedData.replace(
+        '{{description}}',
+        currentCat.description
+      );
+
+      const breedAsOptions = breeds.map(
+        (b) => `<option value="${b}">${b}</option>`
+      );
+
+      modifiedData = modifiedData.replace(
+        '{{catBreeds}}',
+        breedAsOptions.join('/')
+      );
+
+      modifiedData = modifiedData.replace('{{breed}}', currentCat.breed);
+      res.write(modifiedData);
+    });
+
+    index.on('end', () => {
+      res.end();
+    });
+
+    index.on('error', (err) => {
+      console.log(err);
+    });
   } else if (pathname.includes('/cats-edit') && req.method === 'POST') {
   } else if (
     pathname.includes('/cats-find-new-home') &&
