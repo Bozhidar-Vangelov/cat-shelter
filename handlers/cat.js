@@ -216,19 +216,17 @@ module.exports = (req, res) => {
         throw err;
       }
 
-      console.log(files);
+      let oldPath = files.upload.path;
+      let newPath = path.normalize(
+        path.join(globalPath, `/content/images/${files.upload.name}`)
+      );
 
-      // let oldPath = files.upload.path;
-      // let newPath = path.normalize(
-      //   path.join(globalPath, `/content/images/${files.upload.name}`)
-      // );
-
-      // fs.rename(oldPath, newPath, (err) => {
-      //   if (err) {
-      //     throw err;
-      //   }
-      //   console.log('File was uploaded successfully');
-      // });
+      fs.rename(oldPath, newPath, (err) => {
+        if (err) {
+          throw err;
+        }
+        console.log('File was uploaded successfully');
+      });
       fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
         if (err) {
           throw err;
@@ -238,16 +236,17 @@ module.exports = (req, res) => {
         let catId = Number(pathname.substring(pathname.length - 1));
 
         currentCats = currentCats.filter((cat) => cat.id !== catId);
+        console.log(fields);
         currentCats.push({
           id: catId,
           ...fields,
-          // image: files.upload.name,
+          image: files.upload.name,
         });
         let json = JSON.stringify(currentCats);
-        // fs.writeFile('./data/cats.json', json, () => {
-        //   res.writeHead(302, { location: '/' });
-        //   res.end();
-        // });
+        fs.writeFile('./data/cats.json', json, 'utf-8', () => {
+          res.writeHead(302, { location: '/' });
+          res.end();
+        });
       });
     });
   } else if (
